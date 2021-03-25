@@ -10,7 +10,7 @@ early mobile phones.
 
 '''
 
-import tkinter as tk
+# import tkinter as tk
 import pygame
 import sys
 import random
@@ -23,10 +23,10 @@ class Board(object):
     as a method to draw the board to our game window.
 
     Values:
-        __width  - width of board in pixels
-        __height - height of board in pixels
-        __rows   - rows is width (and height) in squares
-        __gap    - gap is the width of one row in pixels
+        width  - width of board in pixels
+        height - height of board in pixels
+        rows   - rows is width (and height) in squares
+        gap    - gap is the width of one row in pixels
 
     Method:
         draw(self, window) - used to draw board on specified window
@@ -35,28 +35,27 @@ class Board(object):
     def __init__(self, w: int = 500, h: int = 500, r: int = 20):
         '''
         __init__ is called when a Board object is created. It
-        initializes the attributes __width, __height, and __rows of
-        Board according to args it receives. __gap is calculated by
+        initializes the attributes width, height, and rows of
+        Board according to args it receives. gap is calculated by
         width // rows.
         '''
-        self.__width = w
-        self.__height = h
-        self.__rows = r
-        self.__gap = w // r
+        self.width = w
+        self.height = h
+        self.rows = r
+        self.gap = w // r
 
     def draw(self, window) -> None:
         '''
         Draws the board on the window passed by the caller.
         '''
-        gap = self.__width // self.__rows
         window.fill((225,225,225))
         x=0
         y=0
-        for line in range(self.__rows):
-            x=x+gap
-            y=y+gap
-            pygame.draw.line( window, (0,0,0), (x,0),(x,self.__width))
-            pygame.draw.line( window,(0,0,0), (0,y), (self.__width,y))
+        for line in range(self.rows):
+            x=x+self.gap
+            y=y+self.gap
+            pygame.draw.line( window, (0,0,0), (x,0),(x,self.width))
+            pygame.draw.line( window,(0,0,0), (0,y), (self.width,y))
         pygame.display.flip()
 
 
@@ -75,17 +74,17 @@ class Snake(object):
         __food - Square object representing the snake's food
     '''
     def __init__(self, x: int = 10, y: int = 10) -> None:
-        self.__xV = 1    # x velocity
-        self.__yV = 0    # y velocity
-        self.__size = 3  # size of snake
+        self.xV = 1    # x velocity
+        self.yV = 0    # y velocity
+        self.size = 3  # size of snake
         start_x = 10     # starting x coordinate
         start_y = 10     # starting y coordinate
-        self.__head = Square(start_x, start_y)
-        self.__body = []
-        self.__food = Square(15,15)
-        for i in range(self.__size):
+        self.head = Square(start_x, start_y)
+        self.body = []
+        self.food = Square(15,15)
+        for i in range(self.size):
             start_x -= 1
-            self.__body.append(Square(start_x, start_y))
+            self.body.append(Square(start_x, start_y))
 
     def update_pos(self):
         '''
@@ -93,63 +92,62 @@ class Snake(object):
         object during the game.
 
         Logic:
-            1st - if food is being eaten, call eat_food() and grow()
+            1st - if food is being eaten, call eat_food()
             2nd - update each body segment position according to previous seg
             3rd - update head position according to velocities
             4th - if we have traveled off the window, wrap to other side
         '''
-        if self.__head.x == self.__food.x and self.__head.y == self.__food.y:
+        if self.head.x == self.food.x and self.head.y == self.food.y:
             self.eat_food()
-            self.grow()
-        for i in range(self.__size - 1, -1, -1):
+        for i in range(self.size - 1, -1, -1):
             if i == 0:
-                self.__body[i].x = self.__head.x
-                self.__body[i].y = self.__head.y
+                self.body[i].x = self.head.x
+                self.body[i].y = self.head.y
             else:
-                self.__body[i].x = self.__body[i-1].x
-                self.__body[i].y = self.__body[i-1].y
+                self.body[i].x = self.body[i-1].x
+                self.body[i].y = self.body[i-1].y
 
-        self.__head.x += self.__xV # update x pos according to x velocity
-        self.__head.y += self.__yV # update y pos according to y velocity
+        self.head.x += self.xV # update x pos according to x velocity
+        self.head.y += self.yV # update y pos according to y velocity
 
 
 
-        if self.__head.x > 19:    # If snake has gone off right side of board:
-            self.__head.x = 0     # Place snake left side of board
-        if self.__head.x < 0:     # If snake has gone off of left side of board:
-            self.__head.x = 19    # Place snake on right side of board
+        if self.head.x > 19:    # If snake has gone off right side of board:
+            self.head.x = 0     # Place snake left side of board
+        if self.head.x < 0:     # If snake has gone off of left side of board:
+            self.head.x = 19    # Place snake on right side of board
 
-        if self.__head.y > 19:
-            self.__head.y = 0
-        if self.__head.y < 0:
-            self.__head.y = 19
+        if self.head.y > 19:
+            self.head.y = 0
+        if self.head.y < 0:
+            self.head.y = 19
 
     def dir_up(self):
         '''
         Method called to adjust velocities to move upwards, once we
         ensure we are not currently traveling down.
         '''
-        if self.__yV != 1:   # if not going down
-            self.__yV = -1   # go up
-            self.__xV = 0    # don't move horizontally
+        if self.yV != 1:   # if not going down
+            self.yV = -1   # go up
+            self.xV = 0    # don't move horizontally
 
     def dir_right(self):
         '''
         Method called to adjust velocities to move right, once we
         ensure we are not currently traveling left.
         '''
-        if self.__xV != -1:
-            self.__xV = 1
-            self.__yV = 0
+        if self.xV != -1:
+            self.xV = 1
+            self.yV = 0
 
     def dir_left(self):
         '''
         Method called to adjust velocities to move left, once we
         ensure we are not currently traveling right.
         '''
-        if self.__xV != 1:
-            self.__xV = -1
-            self.__yV  = 0
+        if self.xV != 1:
+            self.xV = -1
+            self.yV  = 0
 
     def dir_down(self):
         '''
@@ -157,34 +155,28 @@ class Snake(object):
         ensure we are not currently traveling up.
         '''
         # If not going up, change direction to down.
-        if self.__yV != -1: # if not going up
-            self.__yV = 1   # go down
-            self.__xV = 0   # dont move vertically
+        if self.yV != -1: # if not going up
+            self.yV = 1   # go down
+            self.xV = 0   # dont move vertically
 
     def eat_food(self):
         '''
         This method generates and sets new coordinates for food using
         randint.
         '''
-        self.__food.x = random.randint(0,19)
-        self.__food.y = random.randint(0,19)
-
-    def grow(self):
-        '''
-        This method will increase the value of __size by 1 and append
-        a new Square object onto the __body list.
-        '''
-        self.__size += 1
-        self.__body.append(Square(1,1))
+        self.food.x = random.randint(0,19)
+        self.food.y = random.randint(0,19)
+        self.size += 1
+        self.body.append(Square(1,1))
 
     def draw(self, window):
         '''
         This method displays the food to the window passed to it.
         '''
-        self.__food.draw(window)
-        self.__head.draw(window)
-        for i in range(self.__size):
-            self.__body[i].draw(window)
+        self.food.draw(window)
+        self.head.draw(window)
+        for i in range(self.size):
+            self.body[i].draw(window)
 
     def check_collision(self):
         '''
@@ -192,8 +184,8 @@ class Snake(object):
         (sharing coordinates) with any of the segments of its body.
         '''
         collision = False
-        for segment in self.__body:
-            if segment.x == self.__head.x and segment.y == self.__head.y:
+        for segment in self.body:
+            if segment.x == self.head.x and segment.y == self.head.y:
                 collision = True
         return collision
 
@@ -201,29 +193,18 @@ class Snake(object):
         '''
         Getter that returns __size.
         '''
-        return self.__size
+        return self.size
 
 class Square(object):
     def __init__(self, start_x, start_y):
         self.x = start_x
         self.y = start_y
-        self.__gap = 500 // 20
+        self.gap = 500 // 20
 
     def draw(self, window):
-         square = pygame.Surface((self.__gap - 1,self.__gap - 1))
+         square = pygame.Surface((self.gap - 1,self.gap - 1))
          square.fill((255,0,0))
-         window.blit(square, (self.x * self.__gap + 1 ,self.y * self.__gap + 1))
-
-
-def game_over(score):
-    '''
-    Display a message box once the game ends.
-    '''
-    msg = "Your score was " + str(score)
-    # root = Tk()
-    # Tk().wm_withdraw()
-    messagebox.showinfo('GAME OVER',msg)
-
+         window.blit(square, (self.x * self.gap + 1 ,self.y * self.gap + 1))
 
 def main():
     pygame.init()                               # Initialize pygame
@@ -252,7 +233,7 @@ def main():
         board.draw(window)                      # draw board to window
         snake.draw(window)                      # draw snake to window
         pygame.display.flip()                   # update the window
-        fps.tick(8)                            # max fps
+        fps.tick(8)                             # max fps
         running = not snake.check_collision()
 
 
